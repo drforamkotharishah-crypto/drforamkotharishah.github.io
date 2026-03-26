@@ -41,6 +41,7 @@ body::before{
 }
 
 *{cursor:none!important;}
+@media(hover:none),(pointer:coarse){*{cursor:auto!important;}.cursor,.cursor-ring{display:none!important;}}
 .cursor{position:fixed;width:6px;height:6px;background:var(--gold);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);}
 .cursor-ring{position:fixed;width:28px;height:28px;border:1px solid rgba(201,168,76,0.35);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:all 0.12s ease;}
 
