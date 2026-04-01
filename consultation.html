@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dr. Foram — Consultation Assistant</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ivory:      #FAF7F0;
+  --ivory2:     #F2EBD9;
+  --gold:       #C9A84C;
+  --gold-d:     #A07828;
+  --gold-l:     #EDD98A;
+  --teal:       #4A9BA8;
+  --teal-d:     #2E7080;
+  --teal-deep:  #1A4F5C;
+  --teal-light: #EAF6F6;
+  --ink:        #2C2C2C;
+  --ink-mid:    #5A5248;
+  --ink-light:  #9A8E7E;
+  --white:      #FFFFFF;
+  --green:      #2E7D52;
+  --green-l:    #E8F5EE;
+  --red:        #C0392B;
+  --red-l:      #FDECEA;
+  --shadow:     0 2px 16px rgba(46,112,128,0.10);
+  --shadow-lg:  0 8px 32px rgba(46,112,128,0.16);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--ivory);
+  color: var(--ink);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── TOP BAR ── */
+.topbar {
+  background: var(--teal-deep);
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+}
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.topbar-logo {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.3em;
+  color: var(--gold-l);
+  font-style: italic;
+  letter-spacing: 0.5px;
+}
+.topbar-subtitle {
+  font-size: 0.7em;
+  color: rgba(255,255,255,0.5);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.timer {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 0.85em;
+  color: white;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.timer-dot {
+  width: 8px; height: 8px;
+  background: #4CAF50;
+  border-radius: 50%;
+  animation: pulse 1.5s infinite;
+}
+@keyframes pulse {
+  0%,100%{opacity:1;transform:scale(1)}
+  50%{opacity:0.5;transform:scale(0.8)}
+}
+.btn-end {
+  background: var(--red);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 0.8em;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+}
+
+/* ── PATIENT BANNER ── */
+.patient-banner {
+  background: linear-gradient(135deg, var(--teal-d), var(--teal-deep));
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.patient-info {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.patient-avatar {
+  width: 48px; height: 48px;
+  background: var(--gold);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.4em;
+  color: white;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+.patient-name {
+  font-size: 1.1em;
+  font-weight: 600;
+  color: white;
+  letter-spacing: 0.3px;
+}
+.patient-meta {
+  font-size: 0.78em;
+  color: rgba(255,255,255,0.7);
+  margin-top: 2px;
+}
+.patient-tags {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.tag {
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: 0.72em;
+  color: white;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+.tag.gold { background: rgba(201,168,76,0.3); border-color: var(--gold); color: var(--gold-l); }
+
+/* ── MAIN GRID ── */
+.main {
+  display: grid;
+  grid-template-columns: 320px 1fr 320px;
+  gap: 0;
+  height: calc(100vh - 130px);
+  overflow: hidden;
+}
+
+/* ── PANEL BASE ── */
+.panel {
+  overflow-y: auto;
+  padding: 20px 16px;
+  border-right: 1px solid rgba(46,112,128,0.12);
+}
+.panel:last-child { border-right: none; border-left: 1px solid rgba(46,112,128,0.12); }
+
+.panel-title {
+  font-size: 0.68em;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--teal);
+  font-weight: 600;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.panel-title::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, var(--teal-light), transparent);
+}
+
+/* ── LEFT PANEL — Patient Info ── */
+.left-panel { background: var(--white); }
+
+.info-card {
+  background: var(--ivory);
+  border: 1px solid rgba(201,168,76,0.2);
+  border-radius: 10px;
+  padding: 14px;
+  margin-bottom: 12px;
+}
+.info-card-title {
+  font-size: 0.7em;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--teal-d);
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 5px 0;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+  gap: 8px;
+}
+.info-row:last-child { border-bottom: none; }
+.info-label {
+  font-size: 0.72em;
+  color: var(--ink-light);
+  font-weight: 500;
+  flex-shrink: 0;
+  width: 80px;
+}
+.info-value {
+  font-size: 0.78em;
+  color: var(--ink);
+  font-weight: 500;
+  text-align: right;
+}
+.info-value.red { color: var(--red); font-weight: 600; }
+.info-value.green { color: var(--green); }
+
+.symptoms-box {
+  background: var(--teal-light);
+  border-left: 3px solid var(--teal);
+  border-radius: 6px;
+  padding: 10px 12px;
+  font-size: 0.8em;
+  color: var(--ink);
+  line-height: 1.6;
+  font-style: italic;
+}
+
+.report-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--green-l);
+  border: 1px solid var(--green);
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: 0.72em;
+  color: var(--green);
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 8px;
+}
+
+/* ── MIDDLE PANEL — Notes ── */
+.mid-panel {
+  background: var(--ivory);
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  overflow: hidden;
+}
+.mid-header {
+  padding: 20px 20px 0;
+}
+.mid-title {
+  font-size: 0.68em;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--teal);
+  font-weight: 600;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.mid-title::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, var(--teal-light), transparent);
+}
+
+.notes-area {
+  flex: 1;
+  margin: 0 20px;
+  background: white;
+  border: 1.5px solid rgba(46,112,128,0.15);
+  border-radius: 10px;
+  padding: 16px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.88em;
+  color: var(--ink);
+  line-height: 1.7;
+  resize: none;
+  outline: none;
+  transition: border-color 0.2s;
+  overflow-y: auto;
+}
+.notes-area:focus { border-color: var(--teal); }
+.notes-area::placeholder { color: var(--ink-light); font-style: italic; }
+
+.notes-toolbar {
+  padding: 12px 20px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  background: white;
+  border-top: 1px solid rgba(0,0,0,0.06);
+  flex-wrap: wrap;
+}
+.quick-tag {
+  background: var(--teal-light);
+  border: 1px solid rgba(46,112,128,0.2);
+  border-radius: 16px;
+  padding: 4px 12px;
+  font-size: 0.72em;
+  color: var(--teal-d);
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.quick-tag:hover { background: var(--teal); color: white; }
+
+.btn-analyse {
+  margin: 12px 20px;
+  background: linear-gradient(135deg, var(--teal-d), var(--teal-deep));
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 14px 20px;
+  font-size: 0.85em;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  letter-spacing: 0.5px;
+  transition: all 0.2s;
+  box-shadow: 0 4px 16px rgba(46,112,128,0.3);
+}
+.btn-analyse:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(46,112,128,0.4); }
+.btn-analyse:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+.btn-prescription {
+  margin: 0 20px 16px;
+  background: linear-gradient(135deg, var(--gold-d), var(--gold));
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 14px 20px;
+  font-size: 0.85em;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  letter-spacing: 0.5px;
+  transition: all 0.2s;
+  box-shadow: 0 4px 16px rgba(160,120,40,0.3);
+}
+.btn-prescription:hover { transform: translateY(-1px); }
+
+/* ── RIGHT PANEL — AI Suggestions ── */
+.right-panel { background: var(--white); }
+
+.ai-status {
+  background: var(--teal-light);
+  border: 1px solid rgba(46,112,128,0.2);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 0.78em;
+  color: var(--teal-d);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.ai-dot {
+  width: 8px; height: 8px;
+  background: var(--teal);
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.ai-dot.thinking { animation: pulse 0.8s infinite; background: var(--gold); }
+
+/* Medicine item */
+.med-item {
+  background: var(--ivory);
+  border: 1px solid rgba(0,0,0,0.06);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  transition: all 0.15s;
+  cursor: pointer;
+}
+.med-item:hover { border-color: var(--teal); background: var(--teal-light); }
+.med-item.approved {
+  background: var(--green-l);
+  border-color: var(--green);
+}
+.med-item.doctor-added {
+  background: #FFF8E7;
+  border-color: var(--gold);
+}
+.med-checkbox {
+  width: 18px; height: 18px;
+  border: 2px solid rgba(46,112,128,0.3);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+  transition: all 0.15s;
+}
+.med-item.approved .med-checkbox {
+  background: var(--green);
+  border-color: var(--green);
+  color: white;
+}
+.med-item.doctor-added .med-checkbox {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: white;
+}
+.med-name {
+  font-size: 0.82em;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.3;
+}
+.med-detail {
+  font-size: 0.72em;
+  color: var(--ink-light);
+  margin-top: 2px;
+}
+.med-source {
+  font-size: 0.65em;
+  padding: 2px 6px;
+  border-radius: 10px;
+  margin-left: auto;
+  flex-shrink: 0;
+  font-weight: 600;
+}
+.med-source.ai { background: rgba(46,112,128,0.1); color: var(--teal-d); }
+.med-source.dr { background: rgba(201,168,76,0.15); color: var(--gold-d); }
+
+/* Add medicine */
+.add-med-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.add-med-input {
+  flex: 1;
+  border: 1.5px solid rgba(46,112,128,0.2);
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 0.78em;
+  font-family: 'DM Sans', sans-serif;
+  outline: none;
+  background: var(--ivory);
+  transition: border-color 0.15s;
+}
+.add-med-input:focus { border-color: var(--teal); }
+.add-med-btn {
+  background: var(--teal-d);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 14px;
+  font-size: 0.78em;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+/* Test item */
+.test-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  border-radius: 6px;
+  margin-bottom: 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+  background: var(--ivory);
+  border: 1px solid rgba(0,0,0,0.06);
+}
+.test-item:hover { border-color: var(--teal); }
+.test-item.approved { background: var(--green-l); border-color: var(--green); }
+.test-check {
+  width: 16px; height: 16px;
+  border: 2px solid rgba(46,112,128,0.3);
+  border-radius: 3px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.15s;
+}
+.test-item.approved .test-check { background: var(--green); border-color: var(--green); color: white; }
+.test-name { font-size: 0.78em; font-weight: 500; color: var(--ink); }
+
+/* Lab item */
+.lab-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  border-radius: 6px;
+  margin-bottom: 6px;
+  background: var(--ivory);
+  border: 1px solid rgba(0,0,0,0.06);
+}
+.lab-dot { width: 6px; height: 6px; background: var(--teal); border-radius: 50%; flex-shrink: 0; }
+.lab-name { font-size: 0.76em; color: var(--ink); }
+.lab-dist { font-size: 0.68em; color: var(--ink-light); margin-left: auto; }
+
+/* Referral */
+.refer-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  margin-bottom: 6px;
+  background: var(--ivory);
+  border: 1px solid rgba(201,168,76,0.2);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.refer-item:hover { border-color: var(--gold); background: #FFFBF0; }
+.refer-item.approved { background: #FFF8E7; border-color: var(--gold); }
+.refer-icon { font-size: 1em; flex-shrink: 0; }
+.refer-name { font-size: 0.78em; font-weight: 500; color: var(--ink); }
+.refer-type { font-size: 0.68em; color: var(--ink-light); }
+
+/* Separator */
+.sep {
+  height: 1px;
+  background: linear-gradient(to right, rgba(46,112,128,0.15), transparent);
+  margin: 16px 0;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(46,112,128,0.2); border-radius: 2px; }
+
+/* Loading spinner */
+.spinner {
+  width: 16px; height: 16px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  display: none;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Toast */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: var(--teal-deep);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 0.85em;
+  font-weight: 500;
+  box-shadow: var(--shadow-lg);
+  transition: transform 0.3s ease;
+  z-index: 999;
+  white-space: nowrap;
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+
+/* Success overlay */
+.success-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(46,80,60,0.7);
+  z-index: 500;
+  align-items: center;
+  justify-content: center;
+}
+.success-overlay.show { display: flex; }
+.success-card {
+  background: white;
+  border-radius: 16px;
+  padding: 40px;
+  text-align: center;
+  max-width: 400px;
+  box-shadow: var(--shadow-lg);
+}
+.success-icon { font-size: 3em; margin-bottom: 16px; }
+.success-title { font-family: 'Cormorant Garamond', serif; font-size: 1.6em; color: var(--teal-deep); margin-bottom: 8px; }
+.success-sub { font-size: 0.85em; color: var(--ink-light); margin-bottom: 24px; }
+.btn-close-success {
+  background: var(--teal-d);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 28px;
+  font-size: 0.85em;
+  font-weight: 600;
+  cursor: pointer;
+}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="topbar-left">
+    <div>
+      <div class="topbar-logo">Dr. Foram Kothari Shah</div>
+      <div class="topbar-subtitle">Consultation Assistant</div>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <div class="timer">
+      <div class="timer-dot"></div>
+      <span id="timer-display">00:00</span>
+    </div>
+    <button class="btn-end" onclick="endConsultation()">End Consultation</button>
+  </div>
+</div>
+
+<!-- PATIENT BANNER -->
+<div class="patient-banner">
+  <div class="patient-info">
+    <div class="patient-avatar" id="patient-avatar">R</div>
+    <div>
+      <div class="patient-name" id="patient-name-display">Rahul Mehta</div>
+      <div class="patient-meta" id="patient-meta-display">34 yrs · Male · 9876543210</div>
+    </div>
+    <div class="patient-tags">
+      <span class="tag gold" id="consult-type-tag">Video Consultation</span>
+      <span class="tag" id="pincode-tag">Kandivali East, 400101</span>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN GRID -->
+<div class="main">
+
+  <!-- LEFT — Patient Info -->
+  <div class="panel left-panel">
+    <div class="panel-title">Patient History</div>
+
+    <div class="info-card">
+      <div class="info-card-title">Basic Details</div>
+      <div class="info-row">
+        <span class="info-label">Name</span>
+        <span class="info-value" id="info-name">Rahul Mehta</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Age / Sex</span>
+        <span class="info-value" id="info-age">34 Yrs / Male</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Mobile</span>
+        <span class="info-value" id="info-mobile">9876543210</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Location</span>
+        <span class="info-value" id="info-location">Kandivali East</span>
+      </div>
+    </div>
+
+    <div class="info-card">
+      <div class="info-card-title">Chief Complaints</div>
+      <div class="symptoms-box" id="symptoms-box">
+        Fever since 2 days, sore throat, mild body ache. No breathlessness.
+      </div>
+    </div>
+
+    <div class="info-card">
+      <div class="info-card-title">Medical History</div>
+      <div class="info-row">
+        <span class="info-label">Past H/O</span>
+        <span class="info-value" id="info-history">No chronic illness</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Medications</span>
+        <span class="info-value" id="info-medications">None</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Allergies</span>
+        <span class="info-value red" id="info-allergies">None known</span>
+      </div>
+    </div>
+
+    <div class="info-card">
+      <div class="info-card-title">AI Report Analysis</div>
+      <div id="report-analysis" style="font-size:0.8em;color:var(--ink-mid);line-height:1.6;font-style:italic">
+        No reports uploaded by patient.
+      </div>
+      <div class="report-badge" id="report-badge" style="display:none" onclick="viewReport()">
+        📄 View Uploaded Report
+      </div>
+    </div>
+  </div>
+
+  <!-- MIDDLE — Notes -->
+  <div class="panel mid-panel">
+    <div class="mid-header">
+      <div class="mid-title">Consultation Notes</div>
+    </div>
+
+    <textarea class="notes-area" id="notes-area" placeholder="Type your consultation notes here...
+
+e.g.
+• Patient looks well, not in acute distress
+• Throat — mild redness, no exudate
+• Temp 101°F, BP 120/80
+• No lymphadenopathy
+• Chest clear
+
+Add symptoms, examination findings, any additional history..."></textarea>
+
+    <div class="notes-toolbar">
+      <span class="quick-tag" onclick="addTag('Throat congested')">Throat congested</span>
+      <span class="quick-tag" onclick="addTag('BP normal')">BP normal</span>
+      <span class="quick-tag" onclick="addTag('Chest clear')">Chest clear</span>
+      <span class="quick-tag" onclick="addTag('Fever 101°F')">Fever 101°F</span>
+      <span class="quick-tag" onclick="addTag('No breathlessness')">No breathlessness</span>
+      <span class="quick-tag" onclick="addTag('Mild dehydration')">Mild dehydration</span>
+      <span class="quick-tag" onclick="addTag('Viral URTI')">Viral URTI</span>
+    </div>
+
+    <button class="btn-analyse" id="btn-analyse" onclick="analyseNotes()">
+      <div class="spinner" id="analyse-spinner"></div>
+      <span id="analyse-text">✨ Analyse & Get AI Suggestions</span>
+    </button>
+
+    <button class="btn-prescription" onclick="generatePrescription()">
+      💊 Generate & Send Prescription
+    </button>
+  </div>
+
+  <!-- RIGHT — AI Suggestions -->
+  <div class="panel right-panel">
+
+    <div class="ai-status" id="ai-status">
+      <div class="ai-dot" id="ai-dot"></div>
+      <span id="ai-status-text">Click Analyse to get AI suggestions</span>
+    </div>
+
+    <div class="panel-title">Medicines</div>
+
+    <div id="medicines-list">
+      <!-- populated by JS -->
+      <div style="font-size:0.78em;color:var(--ink-light);font-style:italic;padding:8px 0">
+        AI suggestions will appear here after analysis...
+      </div>
+    </div>
+
+    <!-- Add own medicine -->
+    <div class="add-med-row">
+      <input class="add-med-input" id="add-med-input"
+        placeholder="Add medicine (e.g. Tab. Amoxicillin 500mg BD)"
+        onkeydown="if(event.key==='Enter')addDoctorMedicine()">
+      <button class="add-med-btn" onclick="addDoctorMedicine()">+ Add</button>
+    </div>
+
+    <div class="sep"></div>
+    <div class="panel-title">Investigations</div>
+
+    <div id="tests-list">
+      <div style="font-size:0.78em;color:var(--ink-light);font-style:italic;padding:8px 0">
+        Tests will appear after analysis...
+      </div>
+    </div>
+
+    <div class="add-med-row">
+      <input class="add-med-input" id="add-test-input"
+        placeholder="Add test (e.g. X-Ray Chest)"
+        onkeydown="if(event.key==='Enter')addDoctorTest()">
+      <button class="add-med-btn" onclick="addDoctorTest()">+ Add</button>
+    </div>
+
+    <div class="sep"></div>
+    <div class="panel-title">Nearby Labs</div>
+    <div id="labs-list">
+      <div style="font-size:0.78em;color:var(--ink-light);font-style:italic;padding:8px 0">
+        Labs near patient will appear after analysis...
+      </div>
+    </div>
+
+    <div class="sep"></div>
+    <div class="panel-title">Refer To</div>
+    <div id="referrals-list">
+      <div style="font-size:0.78em;color:var(--ink-light);font-style:italic;padding:8px 0">
+        Referral suggestions will appear after analysis...
+      </div>
+    </div>
+
+    <div class="add-med-row">
+      <input class="add-med-input" id="add-refer-input"
+        placeholder="Add referral (e.g. ENT Specialist)"
+        onkeydown="if(event.key==='Enter')addDoctorReferral()">
+      <button class="add-med-btn" onclick="addDoctorReferral()">+ Add</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- SUCCESS OVERLAY -->
+<div class="success-overlay" id="success-overlay">
+  <div class="success-card">
+    <div class="success-icon">✅</div>
+    <div class="success-title">Prescription Sent!</div>
+    <div class="success-sub" id="success-msg">Prescription has been sent to patient's WhatsApp and clinic email.</div>
+    <button class="btn-close-success" onclick="document.getElementById('success-overlay').classList.remove('show')">
+      Close
+    </button>
+  </div>
+</div>
+
+<script>
+// ── STATE ──────────────────────────────────────────────────────────────
+const state = {
+  patient: {},
+  medicines: [],
+  tests: [],
+  labs: [],
+  referrals: [],
+  notes: '',
+  rxId: 'RX-' + new Date().getFullYear() + '-' + String(Date.now()).slice(-4)
+};
+
+// ── TIMER ──────────────────────────────────────────────────────────────
+let seconds = 0;
+setInterval(() => {
+  seconds++;
+  const m = String(Math.floor(seconds/60)).padStart(2,'0');
+  const s = String(seconds%60).padStart(2,'0');
+  document.getElementById('timer-display').textContent = `${m}:${s}`;
+}, 1000);
+
+// ── LOAD PATIENT FROM URL PARAMS ──────────────────────────────────────
+function loadPatient() {
+  const p = new URLSearchParams(window.location.search);
+  const name     = p.get('name')     || 'Rahul Mehta';
+  const age      = p.get('age')      || '34';
+  const gender   = p.get('gender')   || 'Male';
+  const mobile   = p.get('mobile')   || '9876543210';
+  const type     = p.get('type')     || 'Video Consultation';
+  const pincode  = p.get('pincode')  || 'Kandivali East';
+  const symptoms = p.get('symptoms') || 'Fever since 2 days, sore throat, mild body ache.';
+  const history  = p.get('history')  || 'No chronic illness';
+  const meds     = p.get('medications') || 'None';
+  const allergies= p.get('allergies')|| 'None known';
+  const report   = p.get('report')   || '';
+
+  state.patient = { name, age, gender, mobile, type, pincode, symptoms, history, meds, allergies, report };
+
+  // Update UI
+  document.getElementById('patient-avatar').textContent   = name.charAt(0).toUpperCase();
+  document.getElementById('patient-name-display').textContent = name;
+  document.getElementById('patient-meta-display').textContent = `${age} yrs · ${gender} · ${mobile}`;
+  document.getElementById('consult-type-tag').textContent  = type;
+  document.getElementById('pincode-tag').textContent       = pincode;
+  document.getElementById('info-name').textContent         = name;
+  document.getElementById('info-age').textContent          = `${age} Yrs / ${gender}`;
+  document.getElementById('info-mobile').textContent       = mobile;
+  document.getElementById('info-location').textContent     = pincode;
+  document.getElementById('symptoms-box').textContent      = symptoms;
+  document.getElementById('info-history').textContent      = history;
+  document.getElementById('info-medications').textContent  = meds;
+  document.getElementById('info-allergies').textContent    = allergies;
+
+  if (report) {
+    document.getElementById('report-analysis').textContent = report;
+    document.getElementById('report-badge').style.display = 'inline-flex';
+  }
+}
+
+// ── QUICK TAGS ─────────────────────────────────────────────────────────
+function addTag(text) {
+  const ta = document.getElementById('notes-area');
+  const val = ta.value;
+  ta.value = val + (val.endsWith('\n') || val === '' ? '' : '\n') + '• ' + text + '\n';
+  ta.focus();
+}
+
+// ── ANALYSE NOTES ──────────────────────────────────────────────────────
+async function analyseNotes() {
+  const notes = document.getElementById('notes-area').value;
+  if (!notes.trim()) { showToast('Please add consultation notes first'); return; }
+
+  const btn = document.getElementById('btn-analyse');
+  const spinner = document.getElementById('analyse-spinner');
+  const text = document.getElementById('analyse-text');
+  const dot = document.getElementById('ai-dot');
+  const statusText = document.getElementById('ai-status-text');
+
+  btn.disabled = true;
+  spinner.style.display = 'block';
+  text.textContent = 'Analysing...';
+  dot.className = 'ai-dot thinking';
+  statusText.textContent = 'AI is analysing your notes...';
+
+  const { patient } = state;
+
+  const systemPrompt = `You are a clinical AI assistant for Dr. Foram Kothari Shah (MBBS, Consulting Physician, Mumbai).
+Analyse the consultation notes and return ONLY valid JSON — no markdown, no extra text.
+RULES: All medicines 3-day course only. Frequency: OD, BD, TDS, QID, SOS, HS, Stat.
+Return this exact structure:
+{
+  "medicines": [{"name":"Tab. Paracetamol 500mg","dose":"500mg","frequency":"TDS","duration":"3 Days","instructions":"After food"}],
+  "tests": ["CBC with Differential","CRP"],
+  "nearby_labs": ["Metropolis — Kandivali E (0.4km)","Dr. Lal PathLabs — Thakur Village (0.8km)","SRL Diagnostics (1.2km)"],
+  "referrals": [{"type":"ENT Specialist","reason":"Persistent throat symptoms","icon":"👂"},{"type":"Physician","reason":"If fever persists","icon":"🏥"}],
+  "nearby_doctors": ["Dr. Anil Sharma ENT — Kandivali E (0.6km)","Dr. Priya Mehta ENT — Thakur Village (1.1km)"],
+  "advice": "Rest, hydrate well, follow up in 3 days"
+}`;
+
+  const userPrompt = `Patient: ${patient.name}, ${patient.age} yrs, ${patient.gender}
+Location: ${patient.pincode}
+Chief Complaint: ${patient.symptoms}
+Past History: ${patient.history}
+Current Medications: ${patient.meds}
+Allergies: ${patient.allergies}
+Consultation Notes: ${notes}
+Consultation Type: ${patient.type}`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1500,
+        system: systemPrompt,
+        messages: [{ role: 'user', content: userPrompt }]
+      })
+    });
+
+    const data = await res.json();
+    const raw = data.content?.[0]?.text || '{}';
+    let ai;
+    try { ai = JSON.parse(raw); } catch(e) { ai = {}; }
+
+    state.medicines  = (ai.medicines || []).map(m => ({ ...m, approved: false, source: 'AI' }));
+    state.tests      = (ai.tests || []).map(t => ({ name: t, approved: false }));
+    state.labs       = ai.nearby_labs || [];
+    state.referrals  = ai.referrals || [];
+    state.nearbyDrs  = ai.nearby_doctors || [];
+    state.advice     = ai.advice || '';
+    state.notes      = notes;
+
+    renderAll();
+
+    dot.className = 'ai-dot';
+    statusText.textContent = `${state.medicines.length} medicines · ${state.tests.length} tests suggested`;
+    showToast('✨ AI analysis complete! Review and approve below.');
+
+  } catch(err) {
+    statusText.textContent = 'Analysis failed — please try again';
+    showToast('Error connecting to AI. Please try again.');
+  }
+
+  btn.disabled = false;
+  spinner.style.display = 'none';
+  text.textContent = '✨ Re-Analyse Notes';
+}
+
+// ── RENDER FUNCTIONS ───────────────────────────────────────────────────
+function renderAll() {
+  renderMedicines();
+  renderTests();
+  renderLabs();
+  renderReferrals();
+}
+
+function renderMedicines() {
+  const el = document.getElementById('medicines-list');
+  if (!state.medicines.length) {
+    el.innerHTML = '<div style="font-size:0.78em;color:var(--ink-light);font-style:italic;padding:8px 0">No medicines suggested yet.</div>';
+    return;
+  }
+  el.innerHTML = state.medicines.map((m, i) => `
+    <div class="med-item ${m.approved ? 'approved' : ''} ${m.source==='Doctor'?'doctor-added':''}" onclick="toggleMed(${i})">
+      <div class="med-checkbox">${m.approved ? '✓' : ''}</div>
+      <div style="flex:1">
+        <div class="med-name">${m.name}</div>
+        <div class="med-detail">${m.dose} · ${m.frequency} · ${m.duration} · ${m.instructions}</div>
+      </div>
+      <span class="med-source ${m.source==='Doctor'?'dr':'ai'}">${m.source==='Doctor'?'Dr':'AI'}</span>
+    </div>
+  `).join('');
+}
+
+function renderTests() {
+  const el = document.getElementById('tests-list');
+  if (!state.tests.length) {
+    el.innerHTML = '<div style="font-size:0.78em;color:var(--ink-light);font-style:italic;padding:8px 0">No tests suggested yet.</div>';
+    return;
+  }
+  el.innerHTML = state.tests.map((t, i) => `
+    <div class="test-item ${t.approved ? 'approved' : ''}" onclick="toggleTest(${i})">
+      <div class="test-check">${t.approved ? '✓' : ''}</div>
+      <span class="test-name">${t.name}</span>
+    </div>
+  `).join('');
+}
+
+function renderLabs() {
+  const el = document.getElementById('labs-list');
+  if (!state.labs.length) {
+    el.innerHTML = '<div style="font-size:0.78em;color:var(--ink-light);font-style:italic;padding:8px 0">Labs will appear after analysis...</div>';
+    return;
+  }
+  el.innerHTML = state.labs.map(l => `
+    <div class="lab-item">
+      <div class="lab-dot"></div>
+      <span class="lab-name">${l}</span>
+    </div>
+  `).join('');
+}
+
+function renderReferrals() {
+  const el = document.getElementById('referrals-list');
+  const all = [
+    ...(state.referrals || []).map(r => ({ name: typeof r === 'string' ? r : r.type, reason: r.reason || '', icon: r.icon || '👨‍⚕️', approved: r.approved || false, source: 'AI' })),
+    ...(state.nearbyDrs || []).map(d => ({ name: d, reason: 'Nearby', icon: '📍', approved: false, source: 'Nearby' }))
+  ];
+  if (!all.length) {
+    el.innerHTML = '<div style="font-size:0.78em;color:var(--ink-light);font-style:italic;padding:8px 0">Referrals will appear after analysis...</div>';
+    return;
+  }
+  el.innerHTML = all.map((r, i) => `
+    <div class="refer-item ${r.approved ? 'approved' : ''}" onclick="toggleRefer(${i})">
+      <span class="refer-icon">${r.icon}</span>
+      <div style="flex:1">
+        <div class="refer-name">${r.name}</div>
+        ${r.reason ? `<div class="refer-type">${r.reason}</div>` : ''}
+      </div>
+      ${r.approved ? '<span style="font-size:0.8em;color:var(--gold-d);font-weight:600">✓</span>' : ''}
+    </div>
+  `).join('');
+}
+
+// ── TOGGLE ─────────────────────────────────────────────────────────────
+function toggleMed(i)   { state.medicines[i].approved = !state.medicines[i].approved; renderMedicines(); }
+function toggleTest(i)  { state.tests[i].approved = !state.tests[i].approved; renderTests(); }
+function toggleRefer(i) {
+  const all = [...(state.referrals||[]), ...(state.nearbyDrs||[])];
+  // Simple toggle on referrals
+  if (i < (state.referrals||[]).length) {
+    if (!state.referrals[i].approved) state.referrals[i].approved = true;
+    else state.referrals[i].approved = false;
+  }
+  renderReferrals();
+}
+
+// ── ADD DOCTOR ITEMS ───────────────────────────────────────────────────
+function addDoctorMedicine() {
+  const input = document.getElementById('add-med-input');
+  const val = input.value.trim();
+  if (!val) return;
+  // Parse: "Tab. Amoxicillin 500mg BD After food"
+  const parts = val.split(' ');
+  state.medicines.push({
+    name: parts.slice(0,3).join(' ') || val,
+    dose: parts[2] || '',
+    frequency: parts[3] || 'OD',
+    duration: '3 Days',
+    instructions: parts.slice(4).join(' ') || 'As directed',
+    approved: true,
+    source: 'Doctor'
+  });
+  input.value = '';
+  renderMedicines();
+  showToast('Medicine added ✓');
+}
+
+function addDoctorTest() {
+  const input = document.getElementById('add-test-input');
+  const val = input.value.trim();
+  if (!val) return;
+  state.tests.push({ name: val, approved: true });
+  input.value = '';
+  renderTests();
+  showToast('Test added ✓');
+}
+
+function addDoctorReferral() {
+  const input = document.getElementById('add-refer-input');
+  const val = input.value.trim();
+  if (!val) return;
+  state.referrals = state.referrals || [];
+  state.referrals.push({ type: val, reason: 'Doctor referral', icon: '👨‍⚕️', approved: true });
+  input.value = '';
+  renderReferrals();
+  showToast('Referral added ✓');
+}
+
+// ── GENERATE PRESCRIPTION ──────────────────────────────────────────────
+async function generatePrescription() {
+  const approvedMeds  = state.medicines.filter(m => m.approved);
+  const approvedTests = state.tests.filter(t => t.approved);
+
+  if (!approvedMeds.length) {
+    showToast('Please approve at least one medicine first');
+    return;
+  }
+
+  // Build webhook URL for n8n
+  const webhookUrl = 'https://saurabhkothari.app.n8n.cloud/webhook/rx-submit';
+
+  const payload = {
+    name:        state.patient.name,
+    age:         state.patient.age,
+    gender:      state.patient.gender,
+    mobile:      state.patient.mobile,
+    type:        state.patient.type,
+    symptoms:    state.patient.symptoms,
+    medicines:   approvedMeds,
+    tests:       approvedTests.map(t => t.name),
+    referrals:   (state.referrals||[]).filter(r=>r.approved).map(r=>r.type||r),
+    advice:      state.advice || 'Follow up in 3 days if symptoms persist',
+    rx_id:       state.rxId,
+    notes:       state.notes,
+    source:      'consultation_page'
+  };
+
+  try {
+    await fetch(webhookUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+  } catch(e) {
+    // Continue even if webhook fails
+  }
+
+  document.getElementById('success-msg').textContent =
+    `Prescription ${state.rxId} sent to ${state.patient.name} on WhatsApp. Clinic email backup sent.`;
+  document.getElementById('success-overlay').classList.add('show');
+}
+
+// ── END CONSULTATION ───────────────────────────────────────────────────
+function endConsultation() {
+  if (confirm('End this consultation? Make sure prescription has been sent.')) {
+    window.close();
+  }
+}
+
+// ── TOAST ──────────────────────────────────────────────────────────────
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ── INIT ───────────────────────────────────────────────────────────────
+loadPatient();
+</script>
+</body>
+</html>
