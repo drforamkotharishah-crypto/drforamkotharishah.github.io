@@ -689,8 +689,9 @@ footer a{color:rgba(255,255,255,.8);text-decoration:none;margin-right:18px;font-
     if (!document.getElementById('bf-consent').checked) { msg.textContent = 'Please tick the consent box to continue.'; msg.className = 'form-msg err'; return; }
     var niceDate = date ? new Date(date + 'T00:00:00').toLocaleDateString('en-IN', {weekday:'short', day:'numeric', month:'short', year:'numeric'}) : '';
     try {
-      fetch(N8N_WEBHOOK, {method:'POST', mode:'no-cors', keepalive:true, headers:{'Content-Type':'text/plain'},
-        body: JSON.stringify({source:'website', name:name, mobile:mobile, type:type, preferred_date:date, preferred_slot:slot, submitted_at:new Date().toISOString()})}).catch(function(){});
+      var payload = JSON.stringify({source:'website', name:name, mobile:mobile, type:type, preferred_date:date, preferred_slot:slot, submitted_at:new Date().toISOString()});
+      fetch(N8N_WEBHOOK, {method:'POST', keepalive:true, headers:{'Content-Type':'application/json'}, body: payload})
+        .catch(function(){ fetch(N8N_WEBHOOK, {method:'POST', mode:'no-cors', keepalive:true, headers:{'Content-Type':'text/plain'}, body: payload}).catch(function(){}); });
     } catch (err) {}
     var text = 'Hello, I would like to book an appointment with Dr. Foram Kothari Shah.\n\n' +
       'Name: ' + name + '\nMobile: ' + mobile + '\nConsultation: ' + type +
