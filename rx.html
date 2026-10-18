@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<title>Prescription Review</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--ivory:#FFFDF9;--ivory-dark:#FBF8F2;--ivory-deep:#F2ECE1;--gold:#C9A84C;--gold-text:#7A5A0C;--teal:#7EB5A6;--teal-dark:#4F8E7E;--teal-deep:#2F6E5E;--ink:#211A16;--ink-mid:#3D342E;--ink-light:#5A4F48;--sos:#9E2A23;--line:#E6DCCB}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ivory-dark);color:var(--ink);font:16px/1.5 'Lato',system-ui,sans-serif}
+.wrap{max-width:760px;margin:0 auto;padding:16px 16px 120px}
+header{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid var(--gold);padding:8px 0 12px;margin-bottom:16px;gap:12px}
+h1{font:700 26px/1.1 'Cormorant Garamond',serif;margin:0;color:var(--teal-deep)}
+.sub{font-size:13px;color:var(--ink-light)}
+.rx{font:700 13px 'Lato';color:var(--gold-text);text-align:right;white-space:nowrap}
+.card{background:var(--ivory);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:14px}
+.card h2{font:700 20px 'Cormorant Garamond',serif;margin:0 0 10px;color:var(--teal-deep)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px 16px}
+.k{font-size:12px;color:var(--ink-light);text-transform:uppercase;letter-spacing:.04em}
+.v{font-weight:700;word-break:break-word}
+.ai{background:#F4F9F7;border-left:4px solid var(--teal);padding:10px 12px;border-radius:6px;white-space:pre-wrap;font-size:15px}
+.note{font-size:13px;color:var(--ink-light);margin:6px 0 0}
+label{display:block;font-size:13px;font-weight:700;color:var(--ink-mid);margin:10px 0 4px}
+input,textarea,select{width:100%;font:inherit;font-size:15px;padding:9px 10px;border:1px solid #CFC3AE;border-radius:8px;background:#fff;color:var(--ink)}
+textarea{min-height:70px;resize:vertical}
+input:focus,textarea:focus{outline:2px solid var(--teal);border-color:var(--teal)}
+.med{border:1px solid var(--line);border-radius:10px;padding:10px;margin-bottom:10px;background:var(--ivory-dark)}
+.med .row{display:grid;grid-template-columns:2fr 1fr;gap:8px}
+.med .row3{display:grid;grid-template-columns:1fr 1fr 1.4fr;gap:8px;margin-top:8px}
+.med .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;font-size:13px;color:var(--ink-light)}
+button{font:700 15px 'Lato';border-radius:10px;border:0;cursor:pointer;padding:10px 14px}
+.add{background:transparent;border:1.5px dashed var(--teal-dark);color:var(--teal-deep);width:100%}
+.del{background:transparent;color:var(--sos);padding:4px 8px;font-size:13px}
+.bar{position:fixed;left:0;right:0;bottom:0;background:var(--ivory);border-top:1px solid var(--line);padding:12px 16px;box-shadow:0 -4px 16px rgba(0,0,0,.06)}
+.bar .in{max-width:760px;margin:0 auto;display:flex;gap:10px;align-items:center}
+.send{background:var(--teal-deep);color:#fff;flex:1;padding:14px}
+.send:disabled{opacity:.5;cursor:not-allowed}
+.chk{display:flex;gap:8px;align-items:flex-start;font-size:14px;margin-top:4px}
+.chk input{width:auto;margin-top:3px}
+.msg{padding:14px;border-radius:10px;margin-bottom:14px;font-weight:700}
+.ok{background:#E3F2EC;color:var(--teal-deep)}
+.err{background:#F8E5E3;color:var(--sos)}
+.hide{display:none}
+@media(max-width:520px){.med .row,.med .row3{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>Prescription Review</h1><div class="sub">Dr. Foram Kothari Shah · for the doctor only</div></div>
+    <div class="rx" id="rxId"></div>
+  </header>
+
+  <div id="bad" class="msg err hide">This link is incomplete or has expired. Please open it again from the WhatsApp or email alert.</div>
+  <div id="done" class="msg ok hide"></div>
+
+  <div id="form">
+    <section class="card">
+      <h2>Patient</h2>
+      <div class="grid">
+        <div><div class="k">Name</div><div class="v" id="pName"></div></div>
+        <div><div class="k">Age / Gender</div><div class="v" id="pAge"></div></div>
+        <div><div class="k">Mobile</div><div class="v" id="pMobile"></div></div>
+        <div><div class="k">Consultation</div><div class="v" id="pType"></div></div>
+      </div>
+      <label>Complaints (from the patient)</label>
+      <div class="ai" id="pSymptoms"></div>
+    </section>
+
+    <section class="card" id="summaryCard">
+      <h2>AI history summary</h2>
+      <div class="ai" id="aiSummary"></div>
+      <p class="note">Prepared from the patient's WhatsApp answers. A suggestion only; the decision is yours.</p>
+    </section>
+
+    <section class="card">
+      <h2>Medicines</h2>
+      <p class="note" style="margin:0 0 10px">AI-suggested draft. Edit, remove or add after listening to the patient. 3-day course.</p>
+      <div id="meds"></div>
+      <button class="add" type="button" id="addMed">+ Add medicine</button>
+    </section>
+
+    <section class="card">
+      <h2>Tests, referral and advice</h2>
+      <label for="tests">Tests advised (one per line)</label>
+      <textarea id="tests"></textarea>
+      <label for="refs">Referral</label>
+      <input id="refs" placeholder="None">
+      <label for="advice">Advice to patient</label>
+      <textarea id="advice"></textarea>
+    </section>
+  </div>
+</div>
+
+<div class="bar" id="bar">
+  <div class="in">
+    <div style="flex:1.4">
+      <label class="chk"><input type="checkbox" id="confirm"> I have reviewed this prescription after consulting the patient.</label>
+    </div>
+    <button class="send" id="send" disabled>Approve &amp; send to patient</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  var WEBHOOK = 'https://saurabhkothari.app.n8n.cloud/webhook/rx-submit';
+  // Patient data arrives after "#" so it never reaches any web server.
+  var p = new URLSearchParams(location.hash.slice(1));
+  function g(k){ return (p.get(k) || '').trim(); }
+  function $(id){ return document.getElementById(id); }
+
+  if (!g('rx_id') || !g('k') || !g('mobile')) {
+    $('bad').classList.remove('hide'); $('form').classList.add('hide'); $('bar').classList.add('hide'); return;
+  }
+
+  $('rxId').textContent = g('rx_id');
+  $('pName').textContent = g('name') || '—';
+  $('pAge').textContent = [g('age') && g('age') + ' yrs', g('gender')].filter(Boolean).join(' / ') || '—';
+  $('pMobile').textContent = g('mobile');
+  $('pType').textContent = g('type') || 'Consultation';
+  $('pSymptoms').textContent = g('symptoms') || '—';
+  if (g('summary')) $('aiSummary').textContent = g('summary'); else $('summaryCard').classList.add('hide');
+  $('tests').value = g('tests').split(';;').filter(Boolean).join('\n');
+  $('refs').value = (g('referrals') && g('referrals') !== 'None') ? g('referrals') : '';
+  $('advice').value = g('advice');
+
+  function field(cls, val, ph){ var i = document.createElement('input'); i.className = cls; i.value = val || ''; i.placeholder = ph; return i; }
+  function addMed(m){
+    m = m || {};
+    var box = document.createElement('div'); box.className = 'med';
+    var top = document.createElement('div'); top.className = 'top';
+    var t = document.createElement('span'); t.textContent = 'Medicine';
+    var del = document.createElement('button'); del.type = 'button'; del.className = 'del'; del.textContent = 'Remove';
+    del.onclick = function(){ box.remove(); };
+    top.append(t, del);
+    var r1 = document.createElement('div'); r1.className = 'row';
+    r1.append(field('m-name', m.name, 'Tab. Paracetamol 500 mg'), field('m-dose', m.dose, 'Dose'));
+    var r2 = document.createElement('div'); r2.className = 'row3';
+    r2.append(field('m-freq', m.frequency, 'BD / TDS'), field('m-dur', m.duration || '3 Days', 'Duration'), field('m-ins', m.instructions, 'After food'));
+    box.append(top, r1, r2);
+    $('meds').appendChild(box);
+  }
+  g('medicines').split(';;').filter(Boolean).forEach(function(s){
+    var a = s.split('|'); addMed({name:a[0], dose:a[1], frequency:a[2], duration:a[3], instructions:a[4]});
+  });
+  if (!$('meds').children.length) addMed();
+  $('addMed').onclick = function(){ addMed(); };
+
+  $('confirm').onchange = function(){ $('send').disabled = !this.checked; };
+
+  $('send').onclick = function(){
+    var meds = [].map.call(document.querySelectorAll('.med'), function(b){
+      function v(c){ return b.querySelector('.' + c).value.trim(); }
+      return { name:v('m-name'), dose:v('m-dose'), frequency:v('m-freq'), duration:v('m-dur'), instructions:v('m-ins'), approved:true };
+    }).filter(function(m){ return m.name; });
+    if (!meds.length && !confirm('No medicines added. Send advice only?')) return;
+    var body = {
+      k: g('k'), rx_id: g('rx_id'), name: g('name'), mobile: g('mobile'), age: g('age'), gender: g('gender'),
+      type: g('type'), symptoms: g('symptoms'), amount: g('amount'), paymentId: g('paymentId'),
+      medicines: meds,
+      tests: $('tests').value.split('\n').map(function(s){return s.trim();}).filter(Boolean),
+      referrals: $('refs').value.trim() ? [$('refs').value.trim()] : [],
+      advice: $('advice').value.trim()
+    };
+    var btn = this; btn.disabled = true; btn.textContent = 'Sending…';
+    fetch(WEBHOOK, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) })
+      .then(function(r){ if (!r.ok) throw new Error('HTTP ' + r.status); })
+      .then(function(){
+        $('form').classList.add('hide'); $('bar').classList.add('hide');
+        var d = $('done'); d.textContent = 'Sent. The prescription and receipt are going to ' + g('name') + ' on WhatsApp, and medicine reminders are set.'; d.classList.remove('hide');
+      })
+      .catch(function(){
+        btn.disabled = false; btn.textContent = 'Approve & send to patient';
+        alert('Could not send. Please check the internet connection and try again.');
+      });
+  };
+})();
+</script>
+</body>
+</html>
