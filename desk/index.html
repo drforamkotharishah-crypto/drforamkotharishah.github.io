@@ -1,0 +1,424 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#0d6b63">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Foram Clinic">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-192.png">
+<title>Dr Foram Clinic</title>
+<style>
+:root{
+  --bg:#f7f5ef; --card:#ffffff; --ink:#1c2a29; --muted:#5b6a68; --line:#e1ddd2;
+  --teal:#0d6b63; --teal-ink:#ffffff; --teal-soft:#e3f0ed; --red:#a3352b; --red-soft:#f8e4e1; --amber-soft:#fbf0dc;
+  --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:17px;line-height:1.5;-webkit-text-size-adjust:100%}
+.wrap{max-width:900px;margin:0 auto;padding:calc(16px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) calc(40px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}
+.brand{display:flex;align-items:center;gap:10px}
+.brand img{width:40px;height:40px;border-radius:10px}
+.brand b{display:block;font-size:1.05rem}
+.brand span{font-size:.85rem;color:var(--muted)}
+h1{font-size:1.5rem;margin:0 0 4px}
+h2{font-size:1.25rem;margin:0}
+p{margin:0}
+.muted{color:var(--muted)}
+.hide{display:none!important}
+button,input,select,textarea{font:inherit;color:inherit}
+.link{background:none;border:0;color:var(--teal);font-weight:600;padding:8px 4px;cursor:pointer}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px}
+.stack{display:grid;gap:14px}
+.who{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.who button{background:var(--card);border:2px solid var(--line);border-radius:16px;padding:18px 12px;text-align:left;cursor:pointer}
+.who button b{display:block;font-size:1.1rem}
+.who button span{font-size:.9rem;color:var(--muted)}
+.who button[aria-pressed="true"]{border-color:var(--teal);background:var(--teal-soft)}
+label{display:grid;gap:6px;font-weight:600;font-size:.95rem}
+label small{font-weight:400;color:var(--muted)}
+input,select,textarea{width:100%;border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--card);font-size:17px}
+textarea{min-height:96px;resize:vertical}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--teal)}
+.pin{letter-spacing:.5em;text-align:center;font-size:1.6rem;font-weight:700}
+.go{display:block;width:100%;background:var(--teal);color:var(--teal-ink);border:0;border-radius:14px;padding:16px;font-size:1.1rem;font-weight:700;cursor:pointer}
+.go:disabled{opacity:.5}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;text-align:left;cursor:pointer;display:grid;gap:4px;min-height:104px}
+.tile b{font-size:1.12rem}
+.tile span{color:var(--muted);font-size:.92rem}
+.tile.main{background:var(--teal);border-color:var(--teal);color:var(--teal-ink)}
+.tile.main span{color:var(--teal-soft)}
+.tile.off{opacity:.55}
+.back{display:inline-flex;align-items:center;gap:6px;background:none;border:0;color:var(--teal);font-weight:600;padding:6px 0;cursor:pointer;margin-bottom:8px;font-size:1rem}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.result{border-radius:14px;padding:16px;display:grid;gap:10px}
+.result.ok{background:var(--teal-soft)}
+.result.bad{background:var(--red-soft)}
+.result b{font-size:1.1rem}
+.result .row{display:flex;gap:8px;flex-wrap:wrap}
+.small{font-size:.88rem}
+.btn2{background:var(--card);border:1.5px solid var(--teal);color:var(--teal);border-radius:12px;padding:10px 14px;font-weight:600;cursor:pointer;text-decoration:none;display:inline-block}
+.med{border:1px solid var(--line);border-radius:14px;padding:12px;display:grid;gap:8px;background:var(--bg)}
+.med .r{display:grid;grid-template-columns:2fr 1fr;gap:8px}
+.med .r3{display:grid;grid-template-columns:1fr 1fr 1.4fr;gap:8px}
+.med .h{display:flex;justify-content:space-between;align-items:center;font-size:.85rem;color:var(--muted)}
+.med .h button{background:none;border:0;color:var(--red);cursor:pointer;font-size:.85rem}
+.check{display:flex;gap:10px;align-items:flex-start;font-weight:400}
+.check input{width:24px;height:24px;flex:none;margin-top:2px}
+.note{background:var(--amber-soft);border-radius:12px;padding:12px 14px;font-size:.92rem}
+.phones{display:grid;gap:10px}
+.phones div{display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid var(--line);padding-bottom:8px}
+.phones div:last-child{border-bottom:0}
+.phones b{font-variant-numeric:tabular-nums;white-space:nowrap}
+.letter{border-bottom:2px solid var(--teal);padding-bottom:10px;margin-bottom:4px}
+.letter b{font-size:1.15rem;color:var(--teal)}
+@media (max-width:520px){.grid2,.med .r,.med .r3{grid-template-columns:1fr}.who{grid-template-columns:1fr}}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#141a19; --card:#1c2423; --ink:#e9efed; --muted:#9fb0ad; --line:#2e3a38;
+  --teal:#5cc2b6; --teal-ink:#0f1716; --teal-soft:#1d3532; --red:#f08a7f; --red-soft:#3a2220; --amber-soft:#3a2d17; color-scheme:dark}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="top">
+    <div class="brand"><img src="icon-192.png" alt=""><div><b>Dr Foram Clinic</b><span id="whoLine">Clinic app</span></div></div>
+    <button class="link hide" id="logout" type="button">Log out</button>
+  </div>
+
+  <!-- LOGIN -->
+  <section id="v-login" class="stack">
+    <div><h1>Welcome</h1><p class="muted">Choose who you are and enter your PIN.</p></div>
+    <div class="who" role="group" aria-label="Who are you">
+      <button type="button" id="pickOwner" aria-pressed="false"><b>Dr Foram</b><span>Owner, on iPad</span></button>
+      <button type="button" id="pickClinic" aria-pressed="false"><b>Clinic</b><span>Staff, on mobile</span></button>
+    </div>
+    <label>PIN <small>6 digits</small><input id="pin" class="pin" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]*"></label>
+    <button class="go" id="loginBtn" type="button">Open</button>
+    <div id="loginMsg"></div>
+  </section>
+
+  <!-- HOME -->
+  <section id="v-home" class="stack hide">
+    <div><h1 id="hello">Good day</h1><p class="muted">Tap what you want to do.</p></div>
+    <div class="tiles" id="tiles"></div>
+    <p class="note">Every screen works the same way: fill the boxes, press the green button, read the message. Green means done. Red means nothing happened; it says why.</p>
+  </section>
+
+  <!-- COLLECT MONEY -->
+  <section id="v-pay" class="stack hide">
+    <button class="back" type="button" data-back>&larr; Back</button>
+    <h2>Collect money</h2>
+    <div class="card stack">
+      <div class="grid2">
+        <label>Patient name<input id="pay-name" autocomplete="off"></label>
+        <label>Patient WhatsApp number<input id="pay-phone" inputmode="tel" placeholder="10 digits"></label>
+      </div>
+      <label>For
+        <select id="pay-for">
+          <option value="Online consultation|499">Online consultation (Rs 499)</option>
+          <option value="Consultation extension|200">Consultation extension (Rs 200)</option>
+          <option value="Medical certificate - fitness|">Medical certificate - fitness</option>
+          <option value="Medical certificate - leave or illness|">Medical certificate - leave or illness</option>
+          <option value="Home visit|1000">Home visit (Rs 1,000)</option>
+          <option value="Family abroad consultation|1000">Family abroad consultation (Rs 1,000)</option>
+          <option value="Clinic visit|">Clinic visit</option>
+          <option value="Voice follow-up|">Voice follow-up</option>
+          <option value="Extra charge|">Extra charge</option>
+          <option value="Other|">Other</option>
+        </select>
+      </label>
+      <label>Amount to collect (Rs) <small>Discount? Type the lower amount.</small><input id="pay-amount" inputmode="decimal" value="499"></label>
+      <button class="go" type="button" id="pay-go">Send payment link</button>
+    </div>
+    <div id="pay-res"></div>
+  </section>
+
+  <!-- REFUND -->
+  <section id="v-refund" class="stack hide">
+    <button class="back" type="button" data-back>&larr; Back</button>
+    <h2>Give a refund</h2>
+    <div class="card stack">
+      <div class="grid2">
+        <label>Patient name<input id="ref-name" autocomplete="off"></label>
+        <label>Patient WhatsApp number<input id="ref-phone" inputmode="tel" placeholder="10 digits"></label>
+      </div>
+      <label>Order ID <small>In the payment alert or Cashfree email. Starts with DRF.</small><input id="ref-order" autocomplete="off" placeholder="DRF..."></label>
+      <div class="grid2">
+        <label>Amount to return (Rs) <small>Full or part</small><input id="ref-amount" inputmode="decimal"></label>
+        <label>Reason
+          <select id="ref-reason">
+            <option>Doctor could not hold the online consultation</option>
+            <option>Clinic cancelled the appointment</option>
+            <option>Payment charged twice</option>
+            <option>Discount given after payment</option>
+            <option>Dr Foram directed a refund</option>
+          </select>
+        </label>
+      </div>
+      <label class="check"><input type="checkbox" id="ref-ok"> I approve this refund.</label>
+      <button class="go" type="button" id="ref-go" disabled>Start refund</button>
+    </div>
+    <div id="ref-res"></div>
+  </section>
+
+  <!-- REFERRAL -->
+  <section id="v-refer" class="stack hide">
+    <button class="back" type="button" data-back>&larr; Back</button>
+    <h2>Send to lab, hospital or doctor</h2>
+    <div class="card stack">
+      <div class="grid2">
+        <label>Patient name<input id="rf-name" autocomplete="off"></label>
+        <label>Patient WhatsApp number<input id="rf-phone" inputmode="tel" placeholder="10 digits"></label>
+      </div>
+      <label>Age / Sex<input id="rf-age" placeholder="e.g. 58 F"></label>
+      <div class="grid2">
+        <label>Lab, hospital or doctor name<input id="rf-to"></label>
+        <label>Their WhatsApp number<input id="rf-tophone" inputmode="tel" placeholder="10 digits"></label>
+      </div>
+      <label>Their address or phone <small>Sent to the patient</small><input id="rf-addr"></label>
+      <label>Referred for<input id="rf-for" placeholder="e.g. CBC, lipid profile / chest X-ray / cardiology opinion"></label>
+      <label>Doctor's note <small>Optional</small><textarea id="rf-note"></textarea></label>
+      <button class="go" type="button" id="rf-go">Send referral</button>
+    </div>
+    <div id="rf-res"></div>
+  </section>
+
+  <!-- CHEMIST -->
+  <section id="v-chem" class="stack hide">
+    <button class="back" type="button" data-back>&larr; Back</button>
+    <h2>Send medicines to chemist</h2>
+    <div class="card stack">
+      <div class="grid2">
+        <label>Patient name<input id="ch-name" autocomplete="off"></label>
+        <label>Patient WhatsApp number<input id="ch-phone" inputmode="tel" placeholder="10 digits"></label>
+      </div>
+      <div class="grid2">
+        <label>Chemist name<input id="ch-to"></label>
+        <label>Chemist WhatsApp number<input id="ch-tophone" inputmode="tel" placeholder="10 digits"></label>
+      </div>
+      <label>Chemist address or phone <small>Sent to the patient</small><input id="ch-addr"></label>
+      <label>Medicines <small>One per line: name, strength, dose, days</small><textarea id="ch-meds" placeholder="Tab. Paracetamol 500 mg, 1 tablet twice a day, 3 days"></textarea></label>
+      <button class="go" type="button" id="ch-go">Send to chemist</button>
+    </div>
+    <div id="ch-res"></div>
+  </section>
+
+  <!-- PRESCRIPTION -->
+  <section id="v-rx" class="stack hide">
+    <button class="back" type="button" data-back>&larr; Back</button>
+    <div class="card stack">
+      <div class="letter"><b>Dr. Foram Kothari Shah</b><div class="small muted">MBBS &middot; Consulting Physician &middot; Regn No 16114853 &middot; 24, Viceroy Court, Thakur Village, Kandivali East</div></div>
+      <div class="grid2">
+        <label>Patient name<input id="rx-name" autocomplete="off"></label>
+        <label>Patient WhatsApp number<input id="rx-phone" inputmode="tel" placeholder="10 digits"></label>
+      </div>
+      <div class="grid2">
+        <label>Age<input id="rx-age" inputmode="numeric"></label>
+        <label>Sex<select id="rx-sex"><option value="">-</option><option>Female</option><option>Male</option><option>Other</option></select></label>
+      </div>
+      <label>Consultation<select id="rx-type"><option>Video consultation</option><option>Clinic visit</option><option>Home visit</option><option>Follow-up</option></select></label>
+      <label>Chief complaints<textarea id="rx-symp"></textarea></label>
+      <div class="stack"><b>Rx &middot; Medicines</b><div id="rx-meds" class="stack"></div><button class="btn2" type="button" id="rx-add">+ Add medicine</button><p class="small muted">Online prescriptions: 3-day course, no Schedule H1 / X drugs (NMC Telemedicine Guidelines 2020).</p></div>
+      <label>Tests <small>One per line</small><textarea id="rx-tests"></textarea></label>
+      <label>Referral <small>Optional</small><input id="rx-refer" placeholder="e.g. ENT specialist - persistent throat symptoms"></label>
+      <label>Advice and follow-up<textarea id="rx-adv">Rest well. Drink enough water. Follow up in 3 days if no improvement.</textarea></label>
+      <label class="check"><input type="checkbox" id="rx-ok"> I have reviewed this prescription after consulting the patient.</label>
+      <button class="go" type="button" id="rx-go" disabled>Approve &amp; send to patient</button>
+    </div>
+    <div id="rx-res"></div>
+  </section>
+
+  <!-- PAYMENTS -->
+  <section id="v-money" class="stack hide">
+    <button class="back" type="button" data-back>&larr; Back</button>
+    <h2>Payments received</h2>
+    <div class="card stack">
+      <p>Every payment also comes as a WhatsApp alert: "New payment received". To see all payments, refunds and bank settlements, open Cashfree.</p>
+      <a class="go" style="text-align:center;text-decoration:none" href="https://merchant.cashfree.com" target="_blank" rel="noopener">Open Cashfree</a>
+      <p class="small muted">Status "Success" = paid. Money reaches Dr Foram's IndusInd account within 2 working days. Login OTP comes to Dr Foram's registered phone.</p>
+    </div>
+  </section>
+
+  <!-- HELP -->
+  <section id="v-help" class="stack hide">
+    <button class="back" type="button" data-back>&larr; Back</button>
+    <h2>Phone numbers and help</h2>
+    <div class="card phones">
+      <div><span>Dr Foram (public number)</span><b>98203 51533</b></div>
+      <div><span>Clinic WhatsApp (give to patients)</span><b>84549 40162</b></div>
+      <div><span>Saurabh, anything not working</span><b>98200 90164</b></div>
+      <div><span>Ambulance</span><b>108</b></div>
+      <div><span>Police / emergency</span><b>112</b></div>
+    </div>
+    <div class="card stack">
+      <b>Fees</b>
+      <div class="phones">
+        <div><span>Online consultation, 10 min</span><b>Rs 499</b></div>
+        <div><span>Extension, up to 22 min in total</span><b>Rs 200</b></div>
+        <div><span>Medical certificate</span><b>as Dr Foram decides</b></div>
+        <div><span>Home visit / family abroad</span><b>Rs 1,000</b></div>
+      </div>
+    </div>
+    <div class="card stack">
+      <b>Send a patient the help link</b>
+      <p class="small">When a patient is stuck, send them: <b>saurabhkothari.app.n8n.cloud/form/clinic-help</b>. Dr Foram, the clinic and Saurabh are alerted together.</p>
+    </div>
+    <p class="note">Never share an OTP or PIN with anyone on the phone, even if they say they are from Cashfree, AiSensy or a bank.</p>
+  </section>
+
+</div>
+
+<script>
+(function(){
+  var API = 'https://saurabhkothari.app.n8n.cloud/webhook/desk-api';
+  var S = { pin:'', role:'', who:'', pick:'' };
+  function $(id){ return document.getElementById(id); }
+  function store(k,v){ try{ if(v===null) localStorage.removeItem(k); else localStorage.setItem(k,v); }catch(e){} }
+  function load(k){ try{ return localStorage.getItem(k)||''; }catch(e){ return ''; } }
+  var views = ['login','home','pay','refund','refer','chem','rx','money','help'];
+  function show(v){ views.forEach(function(x){ $('v-'+x).classList.toggle('hide', x!==v); }); window.scrollTo(0,0); }
+  function esc(s){ return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+
+  function result(box, ok, msg, extra){
+    var el = $(box);
+    el.innerHTML = '<div class="result ' + (ok?'ok':'bad') + '"><b>' + (ok?'Done':'Not done') + '</b><p>' + esc(msg) + '</p>' + (extra||'') + '</div>';
+    el.scrollIntoView({behavior:'smooth', block:'center'});
+  }
+  function call(action, data){
+    return fetch(API, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ pin:S.pin, action:action, data:data||{} }) })
+      .then(function(r){ return r.json(); })
+      .catch(function(){ return { ok:false, message:'No internet, or the system did not answer. Check the connection and press the button again.' }; });
+  }
+  function busy(btn, on, label){ btn.disabled = on; btn.textContent = on ? 'Please wait...' : label; }
+
+  // ---------- login ----------
+  function pick(r){ S.pick=r; $('pickOwner').setAttribute('aria-pressed', r==='owner'); $('pickClinic').setAttribute('aria-pressed', r==='clinic'); $('pin').focus(); }
+  $('pickOwner').onclick = function(){ pick('owner'); };
+  $('pickClinic').onclick = function(){ pick('clinic'); };
+  $('loginBtn').onclick = function(){
+    var pin = $('pin').value.replace(/\D/g,'');
+    if (pin.length !== 6) { $('loginMsg').innerHTML = '<div class="result bad"><p>Please enter your 6-digit PIN.</p></div>'; return; }
+    var b = this; busy(b, true, 'Open'); S.pin = pin;
+    call('login').then(function(r){
+      busy(b, false, 'Open');
+      if (!r.ok) { $('loginMsg').innerHTML = '<div class="result bad"><p>' + esc(r.message||'Wrong PIN.') + '</p></div>'; return; }
+      S.role = r.role; S.who = r.who; store('fks_pin', pin); store('fks_role', r.role); store('fks_who', r.who); home();
+    });
+  };
+  $('pin').addEventListener('keydown', function(e){ if(e.key==='Enter') $('loginBtn').click(); });
+  $('logout').onclick = function(){ store('fks_pin',null); store('fks_role',null); store('fks_who',null); S = {pin:'',role:'',who:'',pick:''}; $('pin').value=''; $('loginMsg').innerHTML=''; $('logout').classList.add('hide'); $('whoLine').textContent='Clinic app'; show('login'); };
+
+  // ---------- home ----------
+  var TILES = {
+    owner: [
+      ['rx','Write prescription','Patient gets it on WhatsApp, reminders set', true],
+      ['pay','Collect money','Fee, extension, certificate, discount'],
+      ['refund','Give a refund','Full or part, back to the patient'],
+      ['refer','Send to lab, hospital or doctor','They get your referral on WhatsApp'],
+      ['chem','Send medicines to chemist','Chemist gets the list and calls the patient'],
+      ['money','Payments received','Open Cashfree'],
+      ['help','Phone numbers and help','Fees, numbers, help link']
+    ],
+    clinic: [
+      ['pay','Collect money','Fee, extension, certificate, discount', true],
+      ['refer','Send to lab, hospital or doctor','They get Dr Foram’s referral on WhatsApp'],
+      ['chem','Send medicines to chemist','Chemist gets the list and calls the patient'],
+      ['money','Payments received','Open Cashfree'],
+      ['refund','Refund','Only Dr Foram can do this. Ask her.', false, true],
+      ['help','Phone numbers and help','Fees, numbers, help link']
+    ]
+  };
+  function home(){
+    var h = new Date().getHours();
+    $('hello').textContent = (h<12?'Good morning':h<17?'Good afternoon':'Good evening') + ', ' + S.who;
+    $('whoLine').textContent = S.role==='owner' ? 'Dr Foram (owner)' : 'Clinic (staff)';
+    $('logout').classList.remove('hide');
+    var t = $('tiles'); t.innerHTML='';
+    TILES[S.role].forEach(function(x){
+      var b = document.createElement('button'); b.type='button'; b.className='tile' + (x[3]?' main':'') + (x[4]?' off':'');
+      b.innerHTML = '<b>' + esc(x[1]) + '</b><span>' + esc(x[2]) + '</span>';
+      b.onclick = function(){ if (x[4]) { alertBox(); return; } show(x[0]); };
+      t.appendChild(b);
+    });
+    show('home');
+  }
+  function alertBox(){ var n=document.createElement('p'); n.className='note'; n.textContent='Refunds are given only by Dr Foram from her iPad. Send her the patient name, phone, Order ID and amount on WhatsApp.'; var t=$('tiles'); if(!t.nextElementSibling || !t.nextElementSibling.dataset.r){ n.dataset.r='1'; t.parentNode.insertBefore(n, t.nextSibling); } }
+  document.querySelectorAll('[data-back]').forEach(function(b){ b.onclick = home; });
+
+  // ---------- collect money ----------
+  $('pay-for').onchange = function(){ var a = this.value.split('|')[1]; $('pay-amount').value = a || ''; if(!a) $('pay-amount').focus(); };
+  $('pay-go').onclick = function(){
+    var b=this, f=$('pay-for').value.split('|')[0];
+    var d = { name:$('pay-name').value, phone:$('pay-phone').value, amount:$('pay-amount').value, purpose:f };
+    busy(b,true,'Send payment link');
+    call('paylink', d).then(function(r){
+      busy(b,false,'Send payment link');
+      if (!r.ok) return result('pay-res', false, r.message);
+      var wa = 'https://wa.me/91' + String(d.phone).replace(/\D/g,'').slice(-10) + '?text=' + encodeURIComponent('Payment link for ' + f + ' (Rs ' + d.amount + ') - Dr Foram Kothari Shah Clinic: ' + r.link);
+      var msg = r.whatsapp ? r.message : 'Payment link created. WhatsApp could not deliver it automatically yet, so tap "Send on WhatsApp" below.';
+      result('pay-res', true, msg, '<div class="row"><a class="btn2" href="' + esc(wa) + '" target="_blank" rel="noopener">Send on WhatsApp</a><button class="btn2" type="button" id="pay-copy">Copy link</button></div><p class="small muted">' + esc(r.link) + '</p>');
+      var c=$('pay-copy'); if(c) c.onclick=function(){ try{ navigator.clipboard.writeText(r.link).then(function(){ c.textContent='Copied'; }); }catch(e){} };
+      $('pay-name').value=''; $('pay-phone').value='';
+    });
+  };
+
+  // ---------- refund ----------
+  $('ref-ok').onchange = function(){ $('ref-go').disabled = !this.checked; };
+  $('ref-go').onclick = function(){
+    var b=this; busy(b,true,'Start refund');
+    call('refund', { name:$('ref-name').value, phone:$('ref-phone').value, orderId:$('ref-order').value, amount:$('ref-amount').value, reason:$('ref-reason').value })
+      .then(function(r){ busy(b,false,'Start refund'); result('ref-res', r.ok, r.message); if(r.ok){ $('ref-ok').checked=false; b.disabled=true; } });
+  };
+
+  // ---------- referral ----------
+  $('rf-go').onclick = function(){
+    var b=this; busy(b,true,'Send referral');
+    call('referral', { name:$('rf-name').value, phone:$('rf-phone').value, ageSex:$('rf-age').value, toName:$('rf-to').value, toPhone:$('rf-tophone').value, toAddr:$('rf-addr').value, forWhat:$('rf-for').value, note:$('rf-note').value })
+      .then(function(r){ busy(b,false,'Send referral'); result('rf-res', r.ok, r.ok ? r.message : (r.message + ' If the numbers are right, WhatsApp may still be approving this message: please send the referral from the clinic WhatsApp today.')); });
+  };
+
+  // ---------- chemist ----------
+  $('ch-go').onclick = function(){
+    var b=this; busy(b,true,'Send to chemist');
+    call('chemist', { name:$('ch-name').value, phone:$('ch-phone').value, toName:$('ch-to').value, toPhone:$('ch-tophone').value, toAddr:$('ch-addr').value, meds:$('ch-meds').value })
+      .then(function(r){ busy(b,false,'Send to chemist'); result('ch-res', r.ok, r.ok ? r.message : (r.message + ' If the numbers are right, WhatsApp may still be approving this message: please send the list from the clinic WhatsApp today.')); });
+  };
+
+  // ---------- prescription ----------
+  function inp(cls, ph, val){ var i=document.createElement('input'); i.className=cls; i.placeholder=ph; if(val) i.value=val; return i; }
+  function addMed(){
+    var m=document.createElement('div'); m.className='med';
+    var h=document.createElement('div'); h.className='h'; h.innerHTML='<span>Medicine</span>'; var x=document.createElement('button'); x.type='button'; x.textContent='Remove'; x.onclick=function(){ m.remove(); }; h.appendChild(x);
+    var r=document.createElement('div'); r.className='r'; r.append(inp('m-name','Tab. Paracetamol 500 mg'), inp('m-dose','Dose'));
+    var r3=document.createElement('div'); r3.className='r3';
+    var fq=document.createElement('select'); fq.className='m-freq'; ['OD (once a day)','BD (twice a day)','TDS (three times)','QID (four times)','SOS (when needed)','HS (at bedtime)'].forEach(function(o){ var op=document.createElement('option'); op.textContent=o; op.value=o.split(' ')[0]; fq.appendChild(op); });
+    r3.append(fq, inp('m-dur','Days','3 Days'), inp('m-ins','After food'));
+    m.append(h,r,r3); $('rx-meds').appendChild(m);
+  }
+  addMed();
+  $('rx-add').onclick = addMed;
+  $('rx-ok').onchange = function(){ $('rx-go').disabled = !this.checked; };
+  $('rx-go').onclick = function(){
+    var meds=[].map.call(document.querySelectorAll('#rx-meds .med'), function(m){ function v(c){ return m.querySelector('.'+c).value.trim(); } return { name:v('m-name'), dose:v('m-dose'), frequency:v('m-freq'), duration:v('m-dur'), instructions:v('m-ins') }; }).filter(function(m){ return m.name; });
+    var b=this; busy(b,true,'Approve & send to patient');
+    call('rx', { name:$('rx-name').value, phone:$('rx-phone').value, age:$('rx-age').value, gender:$('rx-sex').value, type:$('rx-type').value, symptoms:$('rx-symp').value, medicines:meds, tests:$('rx-tests').value.split('\n'), referral:$('rx-refer').value, advice:$('rx-adv').value })
+      .then(function(r){ busy(b,false,'Approve & send to patient'); result('rx-res', r.ok, r.message); if(r.ok){ $('rx-ok').checked=false; b.disabled=true; } });
+  };
+
+  // ---------- start ----------
+  S.pin = load('fks_pin'); S.role = load('fks_role'); S.who = load('fks_who');
+  if (S.pin && S.role) home(); else show('login');
+})();
+</script>
+</body>
+</html>
