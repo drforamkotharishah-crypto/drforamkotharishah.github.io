@@ -104,7 +104,13 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--teal)}
     </div>
     <label>PIN <small>6 digits</small><input id="pin" class="pin" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]*"></label>
     <button class="go" id="loginBtn" type="button">Open</button>
+    <div id="codeBox" class="stack hide">
+      <p class="note" id="codeNote">A 6-digit code has been sent on WhatsApp to Dr Foram and Saurabh.</p>
+      <label>WhatsApp code <small>Works for 10 minutes</small><input id="code" class="pin" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]*"></label>
+      <button class="go" id="codeBtn" type="button">Confirm code</button>
+    </div>
     <div id="loginMsg"></div>
+    <p class="small muted">5 wrong tries lock the app for 30 minutes, and Dr Foram (98203 51533) and Saurabh (98200 90164) are told. Saurabh can unlock it.</p>
   </section>
 
   <!-- HOME -->
@@ -281,7 +287,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--teal)}
 <script>
 (function(){
   var API = 'https://saurabhkothari.app.n8n.cloud/webhook/desk-api';
-  var S = { pin:'', role:'', who:'', pick:'' };
+  var S = { pin:'', token:'', role:'', who:'', pick:'' };
   function $(id){ return document.getElementById(id); }
   function store(k,v){ try{ if(v===null) localStorage.removeItem(k); else localStorage.setItem(k,v); }catch(e){} }
   function load(k){ try{ return localStorage.getItem(k)||''; }catch(e){ return ''; } }
@@ -294,10 +300,13 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--teal)}
     el.innerHTML = '<div class="result ' + (ok?'ok':'bad') + '"><b>' + (ok?'Done':'Not done') + '</b><p>' + esc(msg) + '</p>' + (extra||'') + '</div>';
     el.scrollIntoView({behavior:'smooth', block:'center'});
   }
-  function call(action, data){
-    return fetch(API, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ pin:S.pin, action:action, data:data||{} }) })
+  function post(body){
+    return fetch(API, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) })
       .then(function(r){ return r.json(); })
       .catch(function(){ return { ok:false, message:'No internet, or the system did not answer. Check the connection and press the button again.' }; });
+  }
+  function call(action, data){
+    return post({ token:S.token, action:action, data:data||{} }).then(function(r){ if (r && r.relogin) { logout(); loginMsg('Please log in again.'); } return r; });
   }
   function busy(btn, on, label){ btn.disabled = on; btn.textContent = on ? 'Please wait...' : label; }
 
@@ -305,18 +314,31 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--teal)}
   function pick(r){ S.pick=r; $('pickOwner').setAttribute('aria-pressed', r==='owner'); $('pickClinic').setAttribute('aria-pressed', r==='clinic'); $('pin').focus(); }
   $('pickOwner').onclick = function(){ pick('owner'); };
   $('pickClinic').onclick = function(){ pick('clinic'); };
+  function loginMsg(t){ $('loginMsg').innerHTML = t ? '<div class="result bad"><p>' + esc(t) + '</p></div>' : ''; }
+  function signedIn(r){ S.token = r.token; S.role = r.role; S.who = r.who; store('fks_token', r.token); store('fks_role', r.role); store('fks_who', r.who); S.pin=''; $('pin').value=''; $('code').value=''; $('codeBox').classList.add('hide'); $('loginBtn').classList.remove('hide'); loginMsg(''); home(); }
   $('loginBtn').onclick = function(){
     var pin = $('pin').value.replace(/\D/g,'');
-    if (pin.length !== 6) { $('loginMsg').innerHTML = '<div class="result bad"><p>Please enter your 6-digit PIN.</p></div>'; return; }
+    if (pin.length !== 6) { loginMsg('Please enter your 6-digit PIN.'); return; }
     var b = this; busy(b, true, 'Open'); S.pin = pin;
-    call('login').then(function(r){
+    post({ pin:pin, action:'login' }).then(function(r){
       busy(b, false, 'Open');
-      if (!r.ok) { $('loginMsg').innerHTML = '<div class="result bad"><p>' + esc(r.message||'Wrong PIN.') + '</p></div>'; return; }
-      S.role = r.role; S.who = r.who; store('fks_pin', pin); store('fks_role', r.role); store('fks_who', r.who); home();
+      if (!r.ok) { loginMsg(r.message||'Wrong PIN.'); return; }
+      if (r.step === 'code') { loginMsg(''); $('codeNote').textContent = r.message; $('codeBox').classList.remove('hide'); $('loginBtn').classList.add('hide'); $('code').focus(); return; }
+      signedIn(r);
     });
   };
+  $('codeBtn').onclick = function(){
+    var b = this; busy(b, true, 'Confirm code');
+    post({ pin:S.pin, action:'verify', code:$('code').value.replace(/\D/g,'') }).then(function(r){
+      busy(b, false, 'Confirm code');
+      if (!r.ok) { loginMsg(r.message); if (/expired/i.test(r.message||'')) { $('codeBox').classList.add('hide'); $('loginBtn').classList.remove('hide'); } return; }
+      signedIn(r);
+    });
+  };
+  $('code').addEventListener('keydown', function(e){ if(e.key==='Enter') $('codeBtn').click(); });
   $('pin').addEventListener('keydown', function(e){ if(e.key==='Enter') $('loginBtn').click(); });
-  $('logout').onclick = function(){ store('fks_pin',null); store('fks_role',null); store('fks_who',null); S = {pin:'',role:'',who:'',pick:''}; $('pin').value=''; $('loginMsg').innerHTML=''; $('logout').classList.add('hide'); $('whoLine').textContent='Clinic app'; show('login'); };
+  function logout(){ store('fks_token',null); store('fks_role',null); store('fks_who',null); store('fks_pin',null); S = {pin:'',token:'',role:'',who:'',pick:''}; $('pin').value=''; $('loginMsg').innerHTML=''; $('codeBox').classList.add('hide'); $('loginBtn').classList.remove('hide'); $('logout').classList.add('hide'); $('whoLine').textContent='Clinic app'; show('login'); }
+  $('logout').onclick = logout;
 
   // ---------- home ----------
   var TILES = {
@@ -416,8 +438,9 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--teal)}
   };
 
   // ---------- start ----------
-  S.pin = load('fks_pin'); S.role = load('fks_role'); S.who = load('fks_who');
-  if (S.pin && S.role) home(); else show('login');
+  store('fks_pin', null);
+  S.token = load('fks_token'); S.role = load('fks_role'); S.who = load('fks_who');
+  if (S.token && S.role) home(); else show('login');
 })();
 </script>
 </body>
