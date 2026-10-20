@@ -194,6 +194,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--teal)}
       <label>Their address or phone <small>Sent to the patient</small><input id="rf-addr"></label>
       <label>Referred for<input id="rf-for" placeholder="e.g. CBC, lipid profile / chest X-ray / cardiology opinion"></label>
       <label>Doctor's note <small>Optional</small><textarea id="rf-note"></textarea></label>
+      <label class="check"><input type="checkbox" id="rf-adm"> Patient is being admitted. Ask the hospital every evening at 8 PM for an update, and for the discharge summary and bill on discharge.</label>
       <button class="go" type="button" id="rf-go">Send referral</button>
     </div>
     <div id="rf-res"></div>
@@ -244,6 +245,15 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--teal)}
     <div id="rx-res"></div>
   </section>
 
+  <!-- ADMITTED -->
+  <section id="v-adm" class="stack hide">
+    <button class="back" type="button" data-back>&larr; Back</button>
+    <h2>Admitted patients</h2>
+    <p class="muted">The hospital is asked for an update every evening at 8 PM. If nothing comes by 10 PM, Dr Foram and the clinic get an alert. Updates, the discharge summary and the bill come on WhatsApp and to drforam21@gmail.com.</p>
+    <div id="adm-list" class="stack"></div>
+    <div id="adm-res"></div>
+  </section>
+
   <!-- PAYMENTS -->
   <section id="v-money" class="stack hide">
     <button class="back" type="button" data-back>&larr; Back</button>
@@ -291,7 +301,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--teal)}
   function $(id){ return document.getElementById(id); }
   function store(k,v){ try{ if(v===null) localStorage.removeItem(k); else localStorage.setItem(k,v); }catch(e){} }
   function load(k){ try{ return localStorage.getItem(k)||''; }catch(e){ return ''; } }
-  var views = ['login','home','pay','refund','refer','chem','rx','money','help'];
+  var views = ['login','home','pay','refund','refer','chem','rx','adm','money','help'];
   function show(v){ views.forEach(function(x){ $('v-'+x).classList.toggle('hide', x!==v); }); window.scrollTo(0,0); }
   function esc(s){ return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
 
@@ -348,6 +358,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--teal)}
       ['refund','Give a refund','Full or part, back to the patient'],
       ['refer','Send to lab, hospital or doctor','They get your referral on WhatsApp'],
       ['chem','Send medicines to chemist','Chemist gets the list and calls the patient'],
+      ['adm','Admitted patients','Daily hospital updates, discharge'],
       ['money','Payments received','Open Cashfree'],
       ['help','Phone numbers and help','Fees, numbers, help link']
     ],
@@ -355,6 +366,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--teal)}
       ['pay','Collect money','Fee, extension, certificate, discount', true],
       ['refer','Send to lab, hospital or doctor','They get Dr Foram’s referral on WhatsApp'],
       ['chem','Send medicines to chemist','Chemist gets the list and calls the patient'],
+      ['adm','Admitted patients','Daily hospital updates, discharge'],
       ['money','Payments received','Open Cashfree'],
       ['refund','Refund','Only Dr Foram can do this. Ask her.', false, true],
       ['help','Phone numbers and help','Fees, numbers, help link']
@@ -369,7 +381,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--teal)}
     TILES[S.role].forEach(function(x){
       var b = document.createElement('button'); b.type='button'; b.className='tile' + (x[3]?' main':'') + (x[4]?' off':'');
       b.innerHTML = '<b>' + esc(x[1]) + '</b><span>' + esc(x[2]) + '</span>';
-      b.onclick = function(){ if (x[4]) { alertBox(); return; } show(x[0]); };
+      b.onclick = function(){ if (x[4]) { alertBox(); return; } show(x[0]); if (x[0]==='adm') loadAdm(); };
       t.appendChild(b);
     });
     show('home');
@@ -405,7 +417,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--teal)}
   // ---------- referral ----------
   $('rf-go').onclick = function(){
     var b=this; busy(b,true,'Send referral');
-    call('referral', { name:$('rf-name').value, phone:$('rf-phone').value, ageSex:$('rf-age').value, toName:$('rf-to').value, toPhone:$('rf-tophone').value, toAddr:$('rf-addr').value, forWhat:$('rf-for').value, note:$('rf-note').value })
+    call('referral', { name:$('rf-name').value, phone:$('rf-phone').value, ageSex:$('rf-age').value, toName:$('rf-to').value, toPhone:$('rf-tophone').value, toAddr:$('rf-addr').value, forWhat:$('rf-for').value, note:$('rf-note').value, admitted:$('rf-adm').checked })
       .then(function(r){ busy(b,false,'Send referral'); result('rf-res', r.ok, r.ok ? r.message : (r.message + ' If the numbers are right, WhatsApp may still be approving this message: please send the referral from the clinic WhatsApp today.')); });
   };
 
@@ -436,6 +448,23 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--teal)}
     call('rx', { name:$('rx-name').value, phone:$('rx-phone').value, age:$('rx-age').value, gender:$('rx-sex').value, type:$('rx-type').value, symptoms:$('rx-symp').value, medicines:meds, tests:$('rx-tests').value.split('\n'), referral:$('rx-refer').value, advice:$('rx-adv').value })
       .then(function(r){ busy(b,false,'Approve & send to patient'); result('rx-res', r.ok, r.message); if(r.ok){ $('rx-ok').checked=false; b.disabled=true; } });
   };
+
+  // ---------- admitted ----------
+  function loadAdm(){
+    var box=$('adm-list'); box.innerHTML='<p class="muted">Loading...</p>'; $('adm-res').innerHTML='';
+    call('admissions').then(function(r){
+      if (!r.ok) { box.innerHTML=''; return result('adm-res', false, r.message||'Could not load.'); }
+      if (!r.list || !r.list.length) { box.innerHTML='<div class="card"><p>No admitted patients right now. When you send a referral, tick "Patient is being admitted" to start daily updates.</p></div>'; return; }
+      box.innerHTML='';
+      r.list.forEach(function(a){
+        var c=document.createElement('div'); c.className='card stack';
+        c.innerHTML='<div><b>' + esc(a.patient) + '</b><p class="muted small">' + esc(a.hospital) + ' &middot; admitted ' + esc(a.since) + '</p></div><p class="small">Last update: ' + esc(a.last) + '</p>';
+        var b=document.createElement('button'); b.type='button'; b.className='btn2'; b.textContent='Stop daily updates';
+        b.onclick=function(){ b.disabled=true; call('stopadm',{id:a.id}).then(function(x){ result('adm-res', x.ok, x.message); loadAdm(); }); };
+        c.appendChild(b); box.appendChild(c);
+      });
+    });
+  }
 
   // ---------- start ----------
   store('fks_pin', null);
